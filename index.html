@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TrustText Submission</title>
+</head>
+<body>
+  <h1>Submit a Message</h1>
+  <form id="msgForm">
+    <label>Class (spam or ham):</label><br>
+    <input type="text" id="class" name="class" required><br><br>
+    <label>Message:</label><br>
+    <textarea id="sms" name="sms" rows="4" cols="50" required></textarea><br><br>
+    <button type="submit">Submit</button>
+  </form>
+  <p id="response"></p>
+
+  <script>
+    document.getElementById("msgForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const cls = document.getElementById("class").value;
+      const sms = document.getElementById("sms").value;
+
+      const res = await fetch("/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ class: cls, sms: sms }),
+      });
+
+      const result = await res.json();
+      document.getElementById("response").innerText = result.message || result.error;
+    });
+  </script>
+</body>
+</html>
