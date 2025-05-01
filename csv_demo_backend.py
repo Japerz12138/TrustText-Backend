@@ -1,3 +1,5 @@
+#This would replace the original backend.py
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -9,12 +11,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import shutil
 
-# Initialize Flask app
 app = Flask(__name__)
 db_dir = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(db_dir, exist_ok=True)
 
-# 🌐 Replace with your actual machine IP address
+
 ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
@@ -29,7 +30,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(db_dir, "messa
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Define Message model
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500))
@@ -46,7 +46,7 @@ class Message(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None
         }
 
-# Global variables
+
 dangerous_patterns = []
 suspicious_patterns = []
 
@@ -54,13 +54,11 @@ def load_patterns():
     """Loads patterns from spam.csv or uses defaults if the file doesn't exist."""
     global dangerous_patterns, suspicious_patterns
 
-    # Fallback default patterns
     default_dangerous = ["you've won", "claim your prize", "free money", "lottery winner", "bank details"]
     default_suspicious = ["urgent attention", "gift card", "limited time offer"]
 
     csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spam.csv')
 
-    # Auto-copy from backup if spam.csv is missing
     backup_csv_path = '/Users/amnakhwaja/TrustText-Backend/backend/spam.csv'
     if not os.path.exists(csv_path):
         if os.path.exists(backup_csv_path):
@@ -75,7 +73,7 @@ def load_patterns():
     # Read spam.csv
     with open(csv_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
-        next(reader, None)  # skip header
+        next(reader, None) 
         dangerous_patterns.clear()
         suspicious_patterns.clear()
         
@@ -87,7 +85,7 @@ def load_patterns():
                 elif severity == 'suspicious':
                     suspicious_patterns.append(pattern)
 
-    # Fallback again if CSV was empty
+
     if not dangerous_patterns:
         dangerous_patterns = default_dangerous
     if not suspicious_patterns:
